@@ -26,7 +26,7 @@ workflows:
       # store CIRCLE_TOKEN as a project env var or Contexts resource
       # if using Contexts, add your context below
       - orb-tools/publish-dev:
-          orb-name: sandbox/aws-parameter-store@dev:alpha
+          orb-name: sandbox/aws-parameter-store
           requires:
             - orb-tools/pack
 
