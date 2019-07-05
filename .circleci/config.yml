@@ -4,7 +4,7 @@ version: 2.1
 # release must exist; you'll need to publish manually at least once)
 # you can use scripts/publish-alpha.sh to publish a @dev:alpha release
 orbs:
-  # your-orb: your-namespace/your-orb@dev:alpha
+  aws-parameter-store: sandbox/aws-parameter-store@dev:alpha
   orb-tools: circleci/orb-tools@8.5.0
 
 workflows:

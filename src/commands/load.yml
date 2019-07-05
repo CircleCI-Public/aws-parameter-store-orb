@@ -1,0 +1,13 @@
+description: >
+  Fetch and load in your parameter store values as environment variables.
+steps:
+  - aws-cli/install
+  - aws-cli/configure
+  - run: | # Each key is first base64 encoded to preserve newlines and spacing, then each encoded string is looped on to load each env var value.
+      for row in $(aws ssm describe-parameters --no-paginate | jq -r '.[] | base64'); do
+        _jq() {
+          echo ${row} | base64 --decode | jq -r ${1}
+        }
+        echo $(_jq '.Name')
+      done
+      
