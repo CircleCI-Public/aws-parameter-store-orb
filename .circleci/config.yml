@@ -12,7 +12,7 @@ jobs:
     docker:
         - image: circleci/node
     steps:
-        - orb-tools/load
+        - aws-parameter-store/load
 
 workflows:
   # this `lint-pack_validate_publish-dev` workflow will run on any commit
