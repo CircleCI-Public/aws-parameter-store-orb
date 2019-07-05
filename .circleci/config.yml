@@ -7,6 +7,13 @@ orbs:
   aws-parameter-store: sandbox/aws-parameter-store@dev:alpha
   orb-tools: circleci/orb-tools@8.5.0
 
+jobs:
+  command-load-test:
+    docker:
+        - image: circleci/node
+    steps:
+        - orb-tools/load
+
 workflows:
   # this `lint-pack_validate_publish-dev` workflow will run on any commit
   lint-pack_validate_publish-dev:
@@ -55,54 +62,46 @@ workflows:
             branches:
               only: master
 
-  # this `integration-tests_prod-release` workflow will ignore commits
-  # it is only triggered by git tags, which are created in the job above
-  # integration-tests_prod-release:
-  #   jobs:
-  #     # - your integration test jobs go here
-  #     # - you will want to call each integration testing job twice,
-  #     # - each under a different name:
-  #     # - once, for integration tests triggered by non-master-branch commits
-  #     # - and again, for tests triggered by commits to master
-  #     # - only commits to master should potentially trigger a prod release
+  this `integration-tests_prod-release` workflow will ignore commits
+  it is only triggered by git tags, which are created in the job above
+  integration-tests_prod-release:
+    jobs:
+      - command-load-test
+      - orb-tools/dev-promote-prod:
+          name: dev-promote-patch
+          orb-name: circleci/orb-tools
+          requires:
+            # - your integration testing jobs go here
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /master-patch.*/
 
-  #     # patch, minor, or major publishing
-  #     - orb-tools/dev-promote-prod:
-  #         name: dev-promote-patch
-  #         orb-name: circleci/orb-tools
-  #         requires:
-  #           # - your integration testing jobs go here
-  #         filters:
-  #           branches:
-  #             ignore: /.*/
-  #           tags:
-  #             only: /master-patch.*/
+      - orb-tools/dev-promote-prod:
+          name: dev-promote-minor
+          release: minor
+          orb-name: circleci/orb-tools
+          requires:
+             - command-load-test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /master-minor.*/
 
-  #     - orb-tools/dev-promote-prod:
-  #         name: dev-promote-minor
-  #         release: minor
-  #         orb-name: circleci/orb-tools
-  #         requires:
-  #           # - your integration testing jobs go here
-  #         filters:
-  #           branches:
-  #             ignore: /.*/
-  #           tags:
-  #             only: /master-minor.*/
+      - orb-tools/dev-promote-prod:
+          name: dev-promote-major
+          release: major
+          orb-name: circleci/orb-tools
+          requires:
+             - command-load-test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /master-major.*/
 
-  #     - orb-tools/dev-promote-prod:
-  #         name: dev-promote-major
-  #         release: major
-  #         orb-name: circleci/orb-tools
-  #         requires:
-  #           # - your integration testing jobs go here
-  #         filters:
-  #           branches:
-  #             ignore: /.*/
-  #           tags:
-  #             only: /master-major.*/
-
-# yaml anchor filters
 integration-dev_filters: &integration-dev_filters
   branches:
     ignore: /.*/
