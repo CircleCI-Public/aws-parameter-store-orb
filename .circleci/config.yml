@@ -26,7 +26,7 @@ workflows:
       # store CIRCLE_TOKEN as a project env var or Contexts resource
       # if using Contexts, add your context below
       - orb-tools/publish-dev:
-          orb-name: # namespace/orb-name, e.g., circleci/orb-starter-kit
+          orb-name: sandbox/aws-parameter-store@dev:alpha
           requires:
             - orb-tools/pack
 
@@ -36,7 +36,7 @@ workflows:
       # key in CircleCI via SSH Permissions, with github.com as Hostname)
       - orb-tools/trigger-integration-workflow:
           name: trigger-integration-dev
-          ssh-fingerprints: # your SSH key fingerprint
+          ssh-fingerprints: "bd:0c:45:b7:61:47:f1:34:42:9f:c9:48:5e:11:d0:20"
           requires:
             - orb-tools/publish-dev
           filters:
@@ -47,7 +47,7 @@ workflows:
       # the 2nd job (below) may also publish a production orb version
       - orb-tools/trigger-integration-workflow:
           name: trigger-integration-master
-          ssh-fingerprints: # your SSH key fingerprint
+          ssh-fingerprints: "bd:0c:45:b7:61:47:f1:34:42:9f:c9:48:5e:11:d0:20"
           tag: master
           requires:
             - orb-tools/publish-dev
