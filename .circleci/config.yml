@@ -70,7 +70,7 @@ workflows:
           name: dev-promote-patch
           orb-name: circleci/orb-tools
           requires:
-            # - your integration testing jobs go here
+            - command-load-test
           filters:
             branches:
               ignore: /.*/
