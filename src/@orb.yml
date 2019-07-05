@@ -1,8 +1,7 @@
 version: 2.1
 
 description: >
-  # What will your orb allow users to do?
-  # Descriptions should be short, simple, and clear.
+  Load AWS Parameter Store keys as environment variables.
 
 orbs:
   aws-cli: circleci/aws-cli@0.1.13
