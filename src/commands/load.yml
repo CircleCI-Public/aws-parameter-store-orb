@@ -7,7 +7,7 @@ steps:
         #aws ssm describe-parameters --no-paginate
         for row in $(aws ssm describe-parameters --no-paginate | jq '.Parameters[]'); do
           _jq() {
-            echo ${row} # | jq -r ${1}
+            echo ${row} | jq -r '.'
           }
           echo $(_jq)
         done
