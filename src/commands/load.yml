@@ -4,4 +4,9 @@ steps:
   - aws-cli/install
   - aws-cli/configure
   - run: | # Locally this will display in terminal as a properly formated json object. It may appear here "broken". Testing.
-        aws ssm describe-parameters --no-paginate | jq '.Parameters[]'
+        for row in $(aws ssm describe-parameters --no-paginate | jq -c '.Parameters[]' | jq -r '.[] | @base64'); do
+          _jq() {
+            echo ${row} | base64 --decode | jq -r ${1}
+          }
+          echo $(_jq '.')
+        done
