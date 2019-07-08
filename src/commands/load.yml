@@ -9,7 +9,7 @@ steps:
             echo ${row} | base64 --decode | jq -r ${1}
           }
           echo "###FULL LIST###"
-          _jq
+          echo $(_jq)
           echo "###PARSED###"
           echo $(_jq '.Name')
         done
