@@ -3,11 +3,5 @@ description: >
 steps:
   - aws-cli/install
   - aws-cli/configure
-  - run: | # Each key is first base64 encoded to preserve newlines and spacing, then each encoded string is looped on to load each environment var value.
-        #aws ssm describe-parameters --no-paginate
-        for row in $(aws ssm describe-parameters --no-paginate | jq '.Parameters[]'); do
-          _jq() {
-            echo ${row} | jq -r '.'
-          }
-          echo $(_jq)
-        done
+  - run: | # Locally this will display in terminal as a properly formated json object. It may appear here "broken". Testing.
+        aws ssm describe-parameters --no-paginate | jq '.Parameters[]'
