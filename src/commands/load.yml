@@ -8,5 +8,5 @@ steps:
         _jq() {
           echo ${row} | base64 --decode | jq -r ${1}
         }
-        echo $(_jq '.Name')
+        echo $(_jq)
       done
