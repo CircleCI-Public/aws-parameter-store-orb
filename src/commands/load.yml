@@ -8,8 +8,8 @@ steps:
           _jq() {
             echo ${row} | base64 --decode | jq -r ${1}
           }
-          echo "###FULL LIST###"
-          echo $(_jq)
-          echo "###PARSED###"
-          echo $(_jq '.Name')
         done
+        echo "###FULL LIST###"
+        echo $(_jq)
+        echo "###PARSED###"
+        echo $(_jq '.Name')
