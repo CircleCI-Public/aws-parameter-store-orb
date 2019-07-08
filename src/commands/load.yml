@@ -4,7 +4,7 @@ steps:
   - aws-cli/install
   - aws-cli/configure
   - run: | # Locally this will display in terminal as a properly formated json object. It may appear here "broken". Testing.
-        for row in $(aws ssm describe-parameters --no-paginate | jq -c '.Parameters[]' | jq -r '.[]'); do
+        for row in $(aws ssm describe-parameters --no-paginate | jq -c '.Parameters[]'); do
           _jq() {
             echo ${row}
           }
