@@ -9,5 +9,5 @@ steps:
           _jq() {
             echo ${row} | jq -r ${1}
           }
-          echo $(_jq .Parameters[$i])
+          echo $(_jq '.Parameters[$i]')
         done
