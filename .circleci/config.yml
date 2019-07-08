@@ -12,7 +12,7 @@ jobs:
     docker:
         - image: circleci/node
     steps:
-        - aws-parameter-store/load
+        - orb-tools/load
 
 workflows:
   # this `lint-pack_validate_publish-dev` workflow will run on any commit
@@ -33,7 +33,7 @@ workflows:
       # store CIRCLE_TOKEN as a project env var or Contexts resource
       # if using Contexts, add your context below
       - orb-tools/publish-dev:
-          orb-name: sandbox/aws-parameter-store
+          orb-name: "sandbox/aws-parameter-store"
           requires:
             - orb-tools/pack
 
@@ -62,15 +62,18 @@ workflows:
             branches:
               only: master
 
-
+  # this `integration-tests_prod-release` workflow will ignore commits
+  # it is only triggered by git tags, which are created in the job above
   integration-tests_prod-release:
     jobs:
-      - command-load-test
+      - command-load-test:
+          filters: *integration-dev_filters
+      # patch, minor, or major publishing
       - orb-tools/dev-promote-prod:
           name: dev-promote-patch
           orb-name: circleci/orb-tools
           requires:
-            - command-load-test
+             - command-load-test
           filters:
             branches:
               ignore: /.*/
@@ -101,6 +104,7 @@ workflows:
             tags:
               only: /master-major.*/
 
+# yaml anchor filters
 integration-dev_filters: &integration-dev_filters
   branches:
     ignore: /.*/
