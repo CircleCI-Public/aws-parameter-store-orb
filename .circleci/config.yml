@@ -67,10 +67,11 @@ workflows:
   integration-tests_prod-release:
     jobs:
       - command-load-test:
-          branches:
-            ignore: /.*/
-          tags:
-            only: /integration-.*/
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /integration-.*/
       # patch, minor, or major publishing
       - orb-tools/dev-promote-prod:
           name: dev-promote-patch
