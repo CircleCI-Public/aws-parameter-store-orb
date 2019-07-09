@@ -3,11 +3,17 @@ description: >
 steps:
   - aws-cli/install
   - aws-cli/configure
-  - run: | # Locally this will display in terminal as a properly formated json object. It may appear here "broken". Testing.
-        for row in $(aws ssm describe-parameters --no-paginate | jq -c '.Parameters[]'); do
+  - run: | # Base64 encoding is used to keep multi-line strings in-tact while parsing.
+        for row in $(aws ssm describe-parameters --no-paginate | jq -c '.Parameters[]' | base64); do
           _jq() {
-            echo ${row} |jq '.Name'
-            echo ${row} |jq '.Type'
+            PARNAME=$(${row} | jq -r '.Name')
+            PARTYPE=$(${row} | jq -r '.Type')
+            if [$PARTYPE = "SecureString"]
+              # decode secure string
+            elif [$PARTYPE = "StringList"]
+              # convert list
+            fi
+            
           }
           echo $(_jq)
         done
