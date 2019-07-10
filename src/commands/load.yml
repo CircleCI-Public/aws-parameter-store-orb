@@ -9,9 +9,11 @@ steps:
             PARNAME=$(${row} | jq -r '.Name')
             PARTYPE=$(${row} | jq -r '.Type')
             # convert all data to strings
-            if [$PARTYPE = "SecureString"]
+            if [ $PARTYPE = "SecureString" ]
+            then
               echo "Decode the string"
-            elif [$PARTYPE = "StringList"]
+            elif [ $PARTYPE = "StringList" ]
+            then
               echo "Covert list to string"
             else # Assume string
               PARDATA=$(aws ssm get-parameters --names ${PARNAME})
