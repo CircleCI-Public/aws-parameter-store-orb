@@ -17,7 +17,6 @@ steps:
               PARDATA=$(aws ssm get-parameters --names ${PARNAME})
             fi
             echo ${PARNAME} ${PARDATA}
-            
           }
           echo $(_jq)
         done
