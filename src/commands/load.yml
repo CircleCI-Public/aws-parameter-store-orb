@@ -18,7 +18,7 @@ steps:
             then
               echo "Covert list to string"
             else # Assume string
-              PARDATA=$(aws ssm get-parameters --names ${PARNAME} | jq -r '.Value')
+              PARDATA=$(aws ssm get-parameters --names ${PARNAME} | jq -r '.Parameters[].Value')
             fi
             echo "${PARNAME} :\ ${PARDATA}"
           }
