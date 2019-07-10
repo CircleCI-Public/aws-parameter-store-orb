@@ -14,6 +14,9 @@ jobs:
       - image: circleci/node
     steps:
       - aws-parameter-store/load
+      - run:
+          name: Validate Env Vars
+          command: env
 
 workflows:
   # this `lint-pack_validate_publish-dev` workflow will run on any commit

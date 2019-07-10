@@ -20,7 +20,7 @@ steps:
             else # Assume string
               PARDATA=$(aws ssm get-parameters --names ${PARNAME} | jq -r '.Parameters[].Value')
             fi
-            echo "${PARNAME} :\ ${PARDATA}"
+            eval "${PARNAME}=\${PARDATA}"
           }
           echo $(_jq)
         done
