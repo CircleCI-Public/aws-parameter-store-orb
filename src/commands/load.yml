@@ -4,7 +4,7 @@ steps:
   - aws-cli/install
   - aws-cli/configure
   - run: | # Base64 encoding is used to keep multi-line strings in-tact while parsing.
-        for row in $(aws ssm describe-parameters --no-paginate | jq -c '.Parameters[]' | base64); do
+        for row in $(aws ssm describe-parameters --no-paginate | jq -c '.Parameters[]'); do
           _jq() {
             PARNAME=$(${row} | jq -r '.Name')
             PARTYPE=$(${row} | jq -r '.Type')
