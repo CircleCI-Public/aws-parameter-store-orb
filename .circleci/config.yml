@@ -1,9 +1,4 @@
 version: 2.1
-
-# add your orb below, to be used in integration tests (note: a @dev:alpha
-# release must exist; you'll need to publish manually at least once)
-# you can use scripts/publish-alpha.sh to publish a @dev:alpha release
-# modify env var
 orbs:
   aws-parameter-store: sandbox/aws-parameter-store@dev:alpha
   orb-tools: circleci/orb-tools@8.14.0
