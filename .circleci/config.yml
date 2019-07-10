@@ -11,9 +11,9 @@ orbs:
 jobs:
   command-load-test:
     docker:
-        - image: circleci/node
+      - image: circleci/node
     steps:
-        - aws-parameter-store/load
+      - aws-parameter-store/load
 
 workflows:
   # this `lint-pack_validate_publish-dev` workflow will run on any commit
@@ -78,7 +78,7 @@ workflows:
           name: dev-promote-patch
           orb-name: circleci/orb-tools
           requires:
-             - command-load-test
+            - command-load-test
           filters:
             branches:
               ignore: /.*/
@@ -90,7 +90,7 @@ workflows:
           release: minor
           orb-name: circleci/orb-tools
           requires:
-             - command-load-test
+            - command-load-test
           filters:
             branches:
               ignore: /.*/
@@ -102,7 +102,7 @@ workflows:
           release: major
           orb-name: circleci/orb-tools
           requires:
-             - command-load-test
+            - command-load-test
           filters:
             branches:
               ignore: /.*/
