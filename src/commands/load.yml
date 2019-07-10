@@ -3,25 +3,25 @@ description: >
 steps:
   - aws-cli/install
   - aws-cli/configure
-  - run: | # Base64 encoding is used to keep multi-line strings in-tact while parsing.
+  - run: 
+      name: Load AWS Parameters into environment
+      command: | 
         for row in $(aws ssm describe-parameters --no-paginate | jq -c '.Parameters[]'); do
           _jq() {
-            echo $(${row} | jq -c '.Name')
-            echo "Testing with here string"
-            jq -r '.Name' \<<< ${row}
-            # PARNAME=$(${row} | jq -r '.Name')
-            # PARTYPE=$(${row} | jq -r '.Type')
-            # # convert all data to strings
-            # if [ $PARTYPE = "SecureString" ]
-            # then
-            #   echo "Decode the string"
-            # elif [ $PARTYPE = "StringList" ]
-            # then
-            #   echo "Covert list to string"
-            # else # Assume string
-            #   PARDATA=$(aws ssm get-parameters --names ${PARNAME})
-            # fi
-            # echo ${PARNAME} ${PARDATA}
+            
+            PARNAME=$(jq -r '.Name' \<<< ${row})
+            PARTYPE=$(jq -r '.Type' \<<< ${row})
+            # convert all data to strings
+            if [ $PARTYPE = "SecureString" ]
+            then
+              echo "Decode the string"
+            elif [ $PARTYPE = "StringList" ]
+            then
+              echo "Covert list to string"
+            else # Assume string
+              PARDATA=$(aws ssm get-parameters --names ${PARNAME})
+            fi
+            echo ${PARNAME} ${PARDATA}
           }
           echo $(_jq)
         done
