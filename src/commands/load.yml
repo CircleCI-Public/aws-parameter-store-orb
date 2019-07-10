@@ -14,9 +14,9 @@ steps:
             if [ $PARTYPE == "SecureString" ]
             then
               echo "Decode the string"
-            elif [ $PARTYPE == "StringList" ]
-            then
-              echo "Covert list to string"
+            # elif [ $PARTYPE == "StringList" ]
+            # then
+            #   echo "Covert list to string"
             else # Assume string
               PARDATA=$(aws ssm get-parameters --names ${PARNAME})
             fi
