@@ -6,19 +6,20 @@ steps:
   - run: | # Base64 encoding is used to keep multi-line strings in-tact while parsing.
         for row in $(aws ssm describe-parameters --no-paginate | jq -c '.Parameters[]'); do
           _jq() {
-            PARNAME=$(${row} | jq -r '.Name')
-            PARTYPE=$(${row} | jq -r '.Type')
-            # convert all data to strings
-            if [ $PARTYPE = "SecureString" ]
-            then
-              echo "Decode the string"
-            elif [ $PARTYPE = "StringList" ]
-            then
-              echo "Covert list to string"
-            else # Assume string
-              PARDATA=$(aws ssm get-parameters --names ${PARNAME})
-            fi
-            echo ${PARNAME} ${PARDATA}
+            echo $(${row} | jq -r '.Name')
+            # PARNAME=$(${row} | jq -r '.Name')
+            # PARTYPE=$(${row} | jq -r '.Type')
+            # # convert all data to strings
+            # if [ $PARTYPE = "SecureString" ]
+            # then
+            #   echo "Decode the string"
+            # elif [ $PARTYPE = "StringList" ]
+            # then
+            #   echo "Covert list to string"
+            # else # Assume string
+            #   PARDATA=$(aws ssm get-parameters --names ${PARNAME})
+            # fi
+            # echo ${PARNAME} ${PARDATA}
           }
-          echo $(_jq)
+          $(_jq)
         done
