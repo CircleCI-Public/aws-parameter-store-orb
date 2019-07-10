@@ -21,7 +21,7 @@ steps:
             else # Assume string
               PARDATA=$(aws ssm get-parameters --names ${PARNAME} | jq -r '.Parameters[].Value')
             fi
-            echo "export ${PARNAME}=\${PARDATA}" >> /tmp/parameterstore
+            echo "export ${PARNAME}=${PARDATA}" >> /tmp/parameterstore
           }
           echo $(_jq)
           source /tmp/parameterstore
