@@ -8,7 +8,7 @@ steps:
           _jq() {
             echo $(${row} | jq -c '.Name')
             echo "Testing with here string"
-            jq -r '.Name' <<< ${row}
+            jq -r '.Name' \<<< ${row}
             # PARNAME=$(${row} | jq -r '.Name')
             # PARTYPE=$(${row} | jq -r '.Type')
             # # convert all data to strings
