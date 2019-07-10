@@ -3,12 +3,11 @@ description: >
 steps:
   - aws-cli/install
   - aws-cli/configure
-  - run: 
+  - run:
       name: Load AWS Parameters into environment
       command: | 
         for row in $(aws ssm describe-parameters --no-paginate | jq -c '.Parameters[]'); do
           _jq() {
-            
             PARNAME=$(jq -r '.Name' \<<< ${row})
             PARTYPE=$(jq -r '.Type' \<<< ${row})
             # convert all data to strings
