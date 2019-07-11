@@ -16,7 +16,7 @@ jobs:
       - aws-parameter-store/load
       - run:
           name: Validate Env Vars
-          command: cat /tmp/parameterstore
+          command: cat /tmp/parameterstore/PARAMETERSTORESOURCEFILE
 
 workflows:
   # this `lint-pack_validate_publish-dev` workflow will run on any commit
