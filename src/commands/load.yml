@@ -28,7 +28,7 @@ steps:
             fi
             echo ${PARDATA} >> /tmp/parameterstore/${PARNAME}
             # remove this later
-            echo "Storing this data:\" 
+            echo "Storing this data:\"
             echo ${PARDATA}
             echo -e "export ${PARNAME}=`cat /tmp/parameterstore/${PARNAME}`" >> /tmp/parameterstore/PARAMETERSTORESOURCEFILE
           }
