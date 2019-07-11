@@ -6,7 +6,7 @@ steps:
   - run:
       name: Load AWS Parameters into environment
       command: |
-        echo "#!/bin/bash" >> /tmp/parameterstore
+        echo "#!/bin/bash" >> /tmp/parameterstore/
         for row in $(aws ssm describe-parameters --no-paginate | jq -c '.Parameters[]'); do
           _jq() {
             PARNAME=$(jq -r '.Name' \<<< ${row})
