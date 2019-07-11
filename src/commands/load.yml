@@ -18,6 +18,11 @@ steps:
             else # Assume string
               PARDATA=$(aws ssm get-parameters --names ${PARNAME} | jq '.Parameters[].Value')
             fi
+            if [ -z $PARDATA ]
+            then
+              echo "${PARNAME} appears to be empty. Please double check the value of this parameter."
+              exit 1
+            fi
             if [ -f /tmp/parameterstore/${PARNAME} ]
             then
               echo "This value has already been stored. Is this value stored twice?"
