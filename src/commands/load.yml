@@ -27,7 +27,7 @@ steps:
               exit 1
             fi
             echo ${PARDATA} >> /tmp/parameterstore/${PARNAME}
-            echo -e "export ${PARNAME}=`cat /tmp/parameterstore/${PARNAME}`" >> /tmp/parameterstore/PARAMETERSTORESOURCEFILE
+            echo "export ${PARNAME}=`cat /tmp/parameterstore/${PARNAME}`" >> /tmp/parameterstore/PARAMETERSTORESOURCEFILE
           }
           echo $(_jq)
           source /tmp/parameterstore/PARAMETERSTORESOURCEFILE
