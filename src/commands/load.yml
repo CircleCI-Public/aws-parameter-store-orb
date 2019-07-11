@@ -7,13 +7,13 @@ steps:
       name: Load AWS Parameters into environment
       command: |
         mkdir -p /tmp/parameterstore/
-        echo "debug 0"
+        echo "debug 0 BEGIN"
         for row in $(aws ssm describe-parameters --no-paginate | jq -c '.Parameters[]'); do
           _jq() {
-            echo "debug 1"
+            echo "debug 1 BEGIN ROW"
             PARNAME=$(jq -r '.Name' \<<< ${row})
             PARTYPE=$(jq -r '.Type' \<<< ${row})
-            echo "debug 2"
+            echo "debug 2 ENV SET"
             # convert all data to strings
             if [ $PARTYPE == "SecureString" ] # Decode encrypted string
             then
@@ -33,12 +33,11 @@ steps:
             fi
             echo "debug 4"
             echo ${PARDATA} >> /tmp/parameterstore/${PARNAME}
-            echo "debug 5"
+            echo "debug 5 FILE WRITTEN"
             echo "export ${PARNAME}=`cat /tmp/parameterstore/${PARNAME}`" >> /tmp/parameterstore/PARAMETERSTORESOURCEFILE
-            echo "debug 6"
+            echo "debug 6 ADDED TO SOURCE FILE"
           }
           echo $(_jq)
-          echo "debug 7"
-          source /tmp/parameterstore/PARAMETERSTORESOURCEFILE
-          echo "debug 8"
         done
+        echo "debug 7 SOURCING FILE"
+        source /tmp/parameterstore/PARAMETERSTORESOURCEFILE
