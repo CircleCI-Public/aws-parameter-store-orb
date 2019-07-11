@@ -21,7 +21,12 @@ steps:
             else # Assume string
               PARDATA=$(aws ssm get-parameters --names ${PARNAME} | jq -r '.Parameters[].Value')
             fi
-            echo ${PARDATA} > /tmp/parameterstore/${PARNAME}
+            if [ -f /tmp/parameterstore/${PARNAME} ]
+            then
+              echo "This value has already been stored. Is this value stored twice?"
+              exit 1
+            fi
+            echo ${PARDATA} >> /tmp/parameterstore/${PARNAME}
             echo "export ${PARNAME}=`cat /tmp/parameterstore/${PARNAME}`" >> /tmp/parameterstore
           }
           echo $(_jq)
