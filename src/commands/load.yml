@@ -19,10 +19,7 @@ steps:
             then
               echo "Covert list to string"
             else # Assume string
-              PARDATA=$(aws ssm get-parameters --names ${PARNAME} | jq -r '.Parameters[].Value')
-              # Check Pardata
-              echo "Checking Data"
-              echo $PARDATA
+              PARDATA=$(aws ssm get-parameters --names ${PARNAME} | jq '.Parameters[].Value')
             fi
             if [ -f /tmp/parameterstore/${PARNAME} ]
             then
@@ -30,9 +27,6 @@ steps:
               exit 1
             fi
             echo ${PARDATA} >> /tmp/parameterstore/${PARNAME}
-            # remove this later
-            echo "Storing this data"
-            echo ${PARDATA}
             echo -e "export ${PARNAME}=`cat /tmp/parameterstore/${PARNAME}`" >> /tmp/parameterstore/PARAMETERSTORESOURCEFILE
           }
           echo $(_jq)
