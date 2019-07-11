@@ -30,7 +30,7 @@ steps:
             # remove this later
             echo "Storing this data:\"
             echo ${PARDATA}
-            echo -e "export ${PARNAME}=`cat /tmp/parameterstore/${PARNAME}`" >> /tmp/parameterstore/PARAMETERSTORESOURCEFILE
+            echo "export ${PARNAME}=`cat /tmp/parameterstore/${PARNAME}`" >> /tmp/parameterstore/PARAMETERSTORESOURCEFILE
           }
           echo $(_jq)
           source /tmp/parameterstore/PARAMETERSTORESOURCEFILE
