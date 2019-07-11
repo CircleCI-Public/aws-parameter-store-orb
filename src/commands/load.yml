@@ -11,33 +11,33 @@ steps:
         for row in $(aws ssm describe-parameters --no-paginate | jq -c '.Parameters[]'); do
           _jq() {
             echo "debug 1 BEGIN ROW"
-            PARNAME=$(jq -r '.Name' \<<< ${row})
-            PARTYPE=$(jq -r '.Type' \<<< ${row})
+            PARNAME=$(jq -r '.Name' \<<< "${row}")
+            PARTYPE=$(jq -r '.Type' \<<< "${row}")
             echo "debug 2 ENV SET"
             # convert all data to strings
-            if [ $PARTYPE == "SecureString" ] # Decode encrypted string
+            if [ "$PARTYPE" == "SecureString" ] # Decode encrypted string
             then
               echo "Decode the string"
             else # Assume string
-              PARDATA=$(aws ssm get-parameters --names ${PARNAME} | jq '.Parameters[].Value')
+              PARDATA=$(aws ssm get-parameters --names "${PARNAME}" | jq '.Parameters[].Value')
             fi
-            if [ -z $PARDATA ]
+            if [ -z "$PARDATA" ]
             then
               echo "${PARNAME} appears to be empty. Please double check the value of this parameter."
               exit 1
             fi
-            if [ -f /tmp/parameterstore/${PARNAME} ]
+            if [ -f /tmp/parameterstore/"${PARNAME}" ]
             then
               echo "This value has already been stored. Is this value stored twice?"
               exit 1
             fi
             echo "debug 4"
-            echo ${PARDATA} >> /tmp/parameterstore/${PARNAME}
+            echo "${PARDATA}" >> /tmp/parameterstore/"${PARNAME}"
             echo "debug 5 FILE WRITTEN"
-            echo "export ${PARNAME}=`cat /tmp/parameterstore/${PARNAME}`" >> /tmp/parameterstore/PARAMETERSTORESOURCEFILE
+            echo "export ${PARNAME}=$(cat /tmp/parameterstore/"${PARNAME}")" >> /tmp/parameterstore/PARAMETERSTORESOURCEFILE
             echo "debug 6 ADDED TO SOURCE FILE"
           }
-          echo $(_jq)
+          $(_jq)
         done
         echo "debug 7 SOURCING FILE"
         source /tmp/parameterstore/PARAMETERSTORESOURCEFILE
