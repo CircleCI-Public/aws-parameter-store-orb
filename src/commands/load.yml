@@ -37,7 +37,7 @@ steps:
             echo "export ${PARNAME}=$(cat /tmp/parameterstore/"${PARNAME}")" >> /tmp/parameterstore/PARAMETERSTORESOURCEFILE
             echo "debug 6 ADDED TO SOURCE FILE"
           }
-          $(_jq)
+          _jq
         done
         echo "debug 7 SOURCING FILE"
         source /tmp/parameterstore/PARAMETERSTORESOURCEFILE
