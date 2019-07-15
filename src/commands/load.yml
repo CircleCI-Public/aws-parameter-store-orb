@@ -11,10 +11,10 @@ steps:
           _jq() {
             PARNAME=$(jq -r '.Name' \<<< "${row}")
             PARTYPE=$(jq -r '.Type' \<<< "${row}")
-            # convert all data to strings
+            # convert all data to strings.
             if [ "$PARTYPE" == "SecureString" ] # Decode encrypted string
             then
-              echo "Decode the string"
+              PARDATA=$(aws ssm get-parameters --names "${PARNAME}" --with-decryption | jq '.Parameters[].Value')
             else # Assume string
               PARDATA=$(aws ssm get-parameters --names "${PARNAME}" | jq '.Parameters[].Value')
             fi
