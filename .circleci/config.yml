@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  aws-parameter-store: sandbox/aws-parameter-store@dev:alpha
+  aws-parameter-store: circleci/aws-parameter-store@dev:alpha
   orb-tools: circleci/orb-tools@8.14.0
 
 jobs:
@@ -34,7 +34,7 @@ workflows:
       # store CIRCLE_TOKEN as a project env var or Contexts resource
       # if using Contexts, add your context below
       - orb-tools/publish-dev:
-          orb-name: "sandbox/aws-parameter-store"
+          orb-name: "circleci/aws-parameter-store"
           requires:
             - orb-tools/pack
 
