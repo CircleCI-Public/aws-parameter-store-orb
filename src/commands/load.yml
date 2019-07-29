@@ -6,6 +6,7 @@ parameters:
     type: string
     description: >
       One or more filters. Use a filter to return a more specific list of results. Ex: "Key=string,Values=string,..."
+    default: ""
 
 steps:
   - aws-cli/install
