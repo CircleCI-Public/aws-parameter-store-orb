@@ -9,7 +9,8 @@ jobs:
     docker:
       - image: circleci/node
     steps:
-      - aws-parameter-store/load
+      - aws-parameter-store/load:
+          filter: ""
       - run:
           name: Validate Env Vars
           command: cat /tmp/parameterstore/PARAMETERSTORESOURCEFILE
