@@ -2,7 +2,7 @@ description: >
   Fetch and load in your parameter store values as environment variables.
 
 parameters:
-  filters:
+  filter:
     type: string
     description: >
       One or more filters. Use a filter to return a more specific list of results. Ex: "Key=string,Values=string,..."
@@ -14,7 +14,7 @@ steps:
       name: Load AWS Parameters into environment
       command: |
         mkdir -p /tmp/parameterstore/
-        for row in $(aws ssm describe-parameters --no-paginate --filters << parameters.filters >> | jq -c '.Parameters[]'); do
+        for row in $(aws ssm describe-parameters --no-paginate --filters << parameters.filter >> | jq -c '.Parameters[]'); do
           _jq() {
             PARNAME=$(jq -r '.Name' \<<< "${row}")
             PARDATA=$(aws ssm get-parameters --with-decryption --names "${PARNAME}" | jq '.Parameters[].Value')
