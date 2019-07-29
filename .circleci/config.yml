@@ -2,18 +2,35 @@ version: 2.1
 
 orbs:
   aws-parameter-store: circleci/aws-parameter-store@dev:alpha
-  orb-tools: circleci/orb-tools@8.14.0
+  orb-tools: circleci/orb-tools@8.27.4
 
 jobs:
   command-load-test:
-    docker:
-      - image: circleci/node
+    executor: orb-tools/node-cci
     steps:
       - aws-parameter-store/load:
           filter: ""
       - run:
           name: Validate Env Vars
           command: cat /tmp/parameterstore/PARAMETERSTORESOURCEFILE
+
+# yaml anchor filters
+integration-dev_filters: &integration-dev_filters
+  branches:
+    ignore: /.*/
+  tags:
+    only: /integration-.*/
+
+integration-master_filters: &integration-master_filters
+  branches:
+    ignore: /.*/
+  tags:
+    only: /master-.*/
+
+prod-deploy_requires: &prod-deploy_requires
+  [
+    command-load-test-master
+  ]
 
 workflows:
   # this `lint-pack_validate_publish-dev` workflow will run on any commit
@@ -44,7 +61,7 @@ workflows:
       # key in CircleCI via SSH Permissions, with github.com as Hostname)
       - orb-tools/trigger-integration-workflow:
           name: trigger-integration-dev
-          ssh-fingerprints: "bd:0c:45:b7:61:47:f1:34:42:9f:c9:48:5e:11:d0:20"
+          ssh-fingerprints: bd:0c:45:b7:61:47:f1:34:42:9f:c9:48:5e:11:d0:20
           requires:
             - orb-tools/publish-dev
           filters:
@@ -55,7 +72,7 @@ workflows:
       # the 2nd job (below) may also publish a production orb version
       - orb-tools/trigger-integration-workflow:
           name: trigger-integration-master
-          ssh-fingerprints: "bd:0c:45:b7:61:47:f1:34:42:9f:c9:48:5e:11:d0:20"
+          ssh-fingerprints: bd:0c:45:b7:61:47:f1:34:42:9f:c9:48:5e:11:d0:20
           tag: master
           requires:
             - orb-tools/publish-dev
@@ -68,17 +85,21 @@ workflows:
   integration-tests_prod-release:
     jobs:
       - command-load-test:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /integration-.*/
+          name: command-load-test-dev
+          filters: *integration-dev_filters
+
+      - command-load-test:
+          name: command-load-test-master
+          filters: *integration-master_filters
+
       # patch, minor, or major publishing
       - orb-tools/dev-promote-prod:
           name: dev-promote-patch
+          context: orb-publishing
           orb-name: circleci/orb-tools
-          requires:
-            - command-load-test
+          ssh-fingerprints: bd:0c:45:b7:61:47:f1:34:42:9f:c9:48:5e:11:d0:20
+          cleanup-tags: true
+          requires: *prod-deploy_requires
           filters:
             branches:
               ignore: /.*/
@@ -87,10 +108,12 @@ workflows:
 
       - orb-tools/dev-promote-prod:
           name: dev-promote-minor
+          context: orb-publishing
           release: minor
           orb-name: circleci/orb-tools
-          requires:
-            - command-load-test
+          ssh-fingerprints: bd:0c:45:b7:61:47:f1:34:42:9f:c9:48:5e:11:d0:20
+          cleanup-tags: true
+          requires: *prod-deploy_requires
           filters:
             branches:
               ignore: /.*/
@@ -99,25 +122,14 @@ workflows:
 
       - orb-tools/dev-promote-prod:
           name: dev-promote-major
+          context: orb-publishing
           release: major
           orb-name: circleci/orb-tools
-          requires:
-            - command-load-test
+          ssh-fingerprints: bd:0c:45:b7:61:47:f1:34:42:9f:c9:48:5e:11:d0:20
+          cleanup-tags: true
+          requires: *prod-deploy_requires
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /master-major.*/
-
-# yaml anchor filters
-integration-dev_filters: &integration-dev_filters
-  branches:
-    ignore: /.*/
-  tags:
-    only: /integration-.*/
-
-integration-master_filters: &integration-master_filters
-  branches:
-    ignore: /.*/
-  tags:
-    only: /master-.*/
