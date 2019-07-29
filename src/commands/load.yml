@@ -10,14 +10,7 @@ steps:
         for row in $(aws ssm describe-parameters --no-paginate | jq -c '.Parameters[]'); do
           _jq() {
             PARNAME=$(jq -r '.Name' \<<< "${row}")
-            PARTYPE=$(jq -r '.Type' \<<< "${row}")
-            # convert all data to strings
-            if [ "$PARTYPE" == "SecureString" ] # Decode encrypted string
-            then
-              echo "Decode the string"
-            else # Assume string
-              PARDATA=$(aws ssm get-parameters --names "${PARNAME}" | jq '.Parameters[].Value')
-            fi
+            PARDATA=$(aws ssm get-parameters --names "${PARNAME}" | jq '.Parameters[].Value')
             if [ -z "$PARDATA" ]
             then
               echo "${PARNAME} appears to be empty. Please double check the value of this parameter."
