@@ -1,0 +1,19 @@
+description: >
+  Load environment variables into a job. The load command will automatically fetch all environment variables permitted via the IAM credentials of the user under the "Describe Parameters" command. https://docs.aws.amazon.com/cli/latest/reference/ssm/describe-parameters.html
+usage:
+  version: 2.1
+  orbs:
+    aws-parameter-store: circleci/aws-parameter-store@x.y.z
+  jobs:
+    my-job:
+      docker:
+        - image: circleci/<language>:<version TAG>
+      steps:
+      - aws-parameter-store/load
+      - checkout
+  workflows:
+    version: 2
+    build_and_test:
+      jobs:
+        - my-job
+
