@@ -10,7 +10,7 @@ steps:
         for row in $(aws ssm describe-parameters --no-paginate | jq -c '.Parameters[]'); do
           _jq() {
             PARNAME=$(jq -r '.Name' \<<< "${row}")
-            PARDATA=$(aws ssm get-parameters --names "${PARNAME}" | jq '.Parameters[].Value')
+            PARDATA=$(aws ssm get-parameters --with-decryption --names "${PARNAME}" | jq '.Parameters[].Value')
             if [ -z "$PARDATA" ]
             then
               echo "${PARNAME} appears to be empty. Please double check the value of this parameter."
