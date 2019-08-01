@@ -1,7 +1,8 @@
 version: 2.1
 
 description: >
-  Load AWS Parameter Store keys as environment variables. Alpha
+  Load AWS Parameter Store keys as environment variables.
+  https://github.com/CircleCI-Public/aws-parameter-store-orb
 
 orbs:
   aws-cli: circleci/aws-cli@0.1.13
