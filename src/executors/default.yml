@@ -1,5 +1,5 @@
 description: >
-  Default Python 2.7 environment. To load environment variables into your own job, define a job with Python installed an invoke the "load" command
+  Default Python 3.10 environment. To load environment variables into your own job, define a job with Python installed an invoke the "load" command
 docker:
   - image: '<<parameters.image>>'
 parameters:
