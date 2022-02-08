@@ -4,7 +4,7 @@ docker:
   - image: '<<parameters.image>>'
 parameters:
   image:
-    default: circleci/python:2.7
+    default: cimg/python:3.10.2
     description: >
       Select a custom Docker image.
       https://hub.docker.com/r/circleci/

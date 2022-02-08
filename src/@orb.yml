@@ -5,4 +5,4 @@ description: >
   https://github.com/CircleCI-Public/aws-parameter-store-orb
 
 orbs:
-  aws-cli: circleci/aws-cli@0.1.13
+  aws-cli: circleci/aws-cli@2.0.6
