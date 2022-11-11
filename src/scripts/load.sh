@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2086
+
 ORB_EVAL_FILTER=$(eval echo "${ORB_EVAL_FILTER}")
 
+args=(--parameter-filters "${ORB_EVAL_FILTER}")
+
 mkdir -p /tmp/parameterstore/
-for row in $(aws ssm describe-parameters --no-paginate --parameter-filters ${ORB_EVAL_FILTER} | jq -c '.Parameters[]'); do
+for row in $(aws ssm describe-parameters --no-paginate "${args[@]}" | jq -c '.Parameters[]'); do
   _jq() {
     PARNAME=$(jq -r '.Name' <<< "${row}")
     PARDATA=$(aws ssm get-parameters --with-decryption --names "${PARNAME}" | jq '.Parameters[].Value')
