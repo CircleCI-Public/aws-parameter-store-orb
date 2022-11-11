@@ -22,4 +22,6 @@ for row in $(aws ssm describe-parameters --no-paginate --parameter-filters "${OR
   }
   _jq
 done
+
+# shellcheck source=/dev/null
 source /tmp/parameterstore/PARAMETERSTORESOURCEFILE
