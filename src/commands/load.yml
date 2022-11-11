@@ -9,8 +9,7 @@ parameters:
     default: ""
 
 steps:
-  - aws-cli/install
-  - aws-cli/configure
+  - aws-cli/setup
   - run:
       name: Load AWS Parameters into environment
       environment:
