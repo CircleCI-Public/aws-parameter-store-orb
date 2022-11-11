@@ -1,26 +1,11 @@
-description: >
-  Fetch and load in your parameter store values as environment variables.
+#!/usr/bin/env bash
 
-parameters:
-  filter:
-    type: string
-    description: >
-      One or more filters. Use a filter to return a more specific list of results. Ex: "Key=string,Option=string,Values=string,..."
-    default: ""
-
-steps:
-  - aws-cli/install
-  - aws-cli/configure
-  - run:
-      name: Load AWS Parameters into environment
-      environment:
-        ORB_EVAL_FILTER: << parameters.filter >>
-      command: << include(scripts/load.sh) >>
+ORB_EVAL_FILTER=$(eval echo "${ORB_EVAL_FILTER}")
 
 mkdir -p /tmp/parameterstore/
-for row in $(aws ssm describe-parameters --no-paginate --parameter-filters << parameters.filter >> | jq -c '.Parameters[]'); do
+for row in $(aws ssm describe-parameters --no-paginate --parameter-filters "${ORB_EVAL_FILTER}" | jq -c '.Parameters[]'); do
   _jq() {
-    PARNAME=$(jq -r '.Name' \<<< "${row}")
+    PARNAME=$(jq -r '.Name' <<< "${row}")
     PARDATA=$(aws ssm get-parameters --with-decryption --names "${PARNAME}" | jq '.Parameters[].Value')
     if [ -z "$PARDATA" ]
     then

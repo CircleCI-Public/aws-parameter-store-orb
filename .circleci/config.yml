@@ -1,135 +1,35 @@
 version: 2.1
-
+setup: true
 orbs:
-  aws-parameter-store: circleci/aws-parameter-store@dev:alpha
-  orb-tools: circleci/orb-tools@8.27.4
+  orb-tools: circleci/orb-tools@11.5
+  shellcheck: circleci/shellcheck@3.1
 
-jobs:
-  command-load-test:
-    executor: orb-tools/node-cci
-    steps:
-      - aws-parameter-store/load:
-          filter: ""
-      - run:
-          name: Validate Env Vars
-          command: cat /tmp/parameterstore/PARAMETERSTORESOURCEFILE
-
-# yaml anchor filters
-integration-dev_filters: &integration-dev_filters
-  branches:
-    ignore: /.*/
+filters: &filters
   tags:
-    only: /integration-.*/
-
-integration-master_filters: &integration-master_filters
-  branches:
-    ignore: /.*/
-  tags:
-    only: /master-.*/
-
-prod-deploy_requires: &prod-deploy_requires
-  [
-    command-load-test-master
-  ]
+    only: /.*/
 
 workflows:
-  # this `lint-pack_validate_publish-dev` workflow will run on any commit
-  lint-pack_validate_publish-dev:
+  lint-pack:
     jobs:
-      # lint your destructured orb YAML files
-      - orb-tools/lint
-
-      # pack your orb YAML files to a single orb.yml
-      # validate the orb.yml file to ensure it is well-formed
+      - orb-tools/lint:
+          filters: *filters
       - orb-tools/pack:
+          filters: *filters
+      - orb-tools/review:
+          filters: *filters
+      - shellcheck/check:
+          filters: *filters
+      - orb-tools/publish:
+          orb-name: circleci/aws-parameter-store
+          vcs-type: << pipeline.project.type >>
           requires:
-            - orb-tools/lint
-
-      # release dev version of orb, for testing & possible publishing
-      # requires a CircleCI API token to be stored as CIRCLE_TOKEN (default)
-      # https://circleci.com/docs/2.0/managing-api-tokens
-      # store CIRCLE_TOKEN as a project env var or Contexts resource
-      # if using Contexts, add your context below
-      - orb-tools/publish-dev:
-          orb-name: "circleci/aws-parameter-store"
-          requires:
-            - orb-tools/pack
-
-      # trigger an integration workflow to test the dev version of your orb
-      # an SSH key must be stored in your orb's repository and in CircleCI
-      # (add the public key as a read/write key on GitHub; add the private
-      # key in CircleCI via SSH Permissions, with github.com as Hostname)
-      - orb-tools/trigger-integration-workflow:
-          name: trigger-integration-dev
-          ssh-fingerprints: bd:0c:45:b7:61:47:f1:34:42:9f:c9:48:5e:11:d0:20
-          requires:
-            - orb-tools/publish-dev
-          filters:
-            branches:
-              ignore: master
-
-      # by default, the 1st job (above) will trigger only integration tests;
-      # the 2nd job (below) may also publish a production orb version
-      - orb-tools/trigger-integration-workflow:
-          name: trigger-integration-master
-          ssh-fingerprints: bd:0c:45:b7:61:47:f1:34:42:9f:c9:48:5e:11:d0:20
-          tag: master
-          requires:
-            - orb-tools/publish-dev
-          filters:
-            branches:
-              only: master
-
-  # this `integration-tests_prod-release` workflow will ignore commits
-  # it is only triggered by git tags, which are created in the job above
-  integration-tests_prod-release:
-    jobs:
-      - command-load-test:
-          name: command-load-test-dev
-          filters: *integration-dev_filters
-
-      - command-load-test:
-          name: command-load-test-master
-          filters: *integration-master_filters
-
-      # patch, minor, or major publishing
-      - orb-tools/dev-promote-prod:
-          name: dev-promote-patch
-          context: orb-publishing
-          orb-name: circleci/orb-tools
-          ssh-fingerprints: bd:0c:45:b7:61:47:f1:34:42:9f:c9:48:5e:11:d0:20
-          cleanup-tags: true
-          requires: *prod-deploy_requires
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /master-patch.*/
-
-      - orb-tools/dev-promote-prod:
-          name: dev-promote-minor
-          context: orb-publishing
-          release: minor
-          orb-name: circleci/orb-tools
-          ssh-fingerprints: bd:0c:45:b7:61:47:f1:34:42:9f:c9:48:5e:11:d0:20
-          cleanup-tags: true
-          requires: *prod-deploy_requires
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /master-minor.*/
-
-      - orb-tools/dev-promote-prod:
-          name: dev-promote-major
-          context: orb-publishing
-          release: major
-          orb-name: circleci/orb-tools
-          ssh-fingerprints: bd:0c:45:b7:61:47:f1:34:42:9f:c9:48:5e:11:d0:20
-          cleanup-tags: true
-          requires: *prod-deploy_requires
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /master-major.*/
+            [orb-tools/lint, orb-tools/review, orb-tools/pack, shellcheck/check]
+          # Use a context to hold your publishing token.
+          context: orb-publisher
+          filters: *filters
+      # Triggers the next workflow in the Orb Development Kit.
+      - orb-tools/continue:
+          pipeline-number: << pipeline.number >>
+          vcs-type: << pipeline.project.type >>
+          requires: [orb-tools/publish]
+          filters: *filters
