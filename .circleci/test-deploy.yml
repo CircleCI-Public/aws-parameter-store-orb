@@ -30,6 +30,8 @@ workflows:
             - orb-tools/pack
             - command-load-test
           context: orb-publisher
+          enable-pr-comment: true
+          github-token: GHI_TOKEN
           filters:
             branches:
               ignore: /.*/
