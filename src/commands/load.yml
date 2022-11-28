@@ -6,7 +6,7 @@ parameters:
     type: string
     description: >
       One or more filters. Use a filter to return a more specific list of results. Ex: "Key=string,Option=string,Values=string,..."
-    default: ""
+    default: ''
 
 steps:
   - aws-cli/install
@@ -15,7 +15,7 @@ steps:
       name: Load AWS Parameters into environment
       command: |
         mkdir -p /tmp/parameterstore/
-        for row in $(aws ssm describe-parameters --no-paginate --parameter-filters << parameters.filter >> | jq -c '.Parameters[]'); do
+        for row in $(aws ssm describe-parameters --no-paginate --parameter-filters << parameters.filter >> | jq -c '.Parameters[]' | jq -c 'del(.Description)'); do
           _jq() {
             PARNAME=$(jq -r '.Name' \<<< "${row}")
             PARDATA=$(aws ssm get-parameters --with-decryption --names "${PARNAME}" | jq '.Parameters[].Value')
