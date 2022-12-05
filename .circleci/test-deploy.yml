@@ -1,0 +1,39 @@
+version: 2.1
+orbs:
+  aws-parameter-store: circleci/aws-parameter-store@dev:<<pipeline.git.revision>>
+  orb-tools: circleci/orb-tools@11.5
+filters: &filters
+  tags:
+    only: /.*/
+jobs:
+  command-load-test:
+    executor: aws-parameter-store/default
+    steps:
+      - aws-parameter-store/load:
+          filter: ""
+      - run:
+          name: Validate Env Vars
+          command: cat /tmp/parameterstore/PARAMETERSTORESOURCEFILE
+workflows:
+  test-deploy:
+    jobs:
+      # Make sure to include "filters: *filters" in every test job you want to run as part of your deployment.
+      - command-load-test:
+          filters: *filters
+      - orb-tools/pack:
+          filters: *filters
+      - orb-tools/publish:
+          orb-name: circleci/aws-parameter-store
+          vcs-type: << pipeline.project.type >>
+          pub-type: production
+          requires:
+            - orb-tools/pack
+            - command-load-test
+          context: orb-publisher
+          enable-pr-comment: true
+          github-token: GHI_TOKEN
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/
